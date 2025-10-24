@@ -1,12 +1,17 @@
 import express, 
 { 
+  Request,
   Response, 
   NextFunction 
 } from 'express';
 import mongoose from 'mongoose';
 import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
-import { AuthorizedRequest } from './types';
+import { 
+  AuthorizedRequest, 
+  messageError, 
+  statusCode 
+} from './types';
 
 const { PORT = 3000 } = process.env;
 
@@ -25,10 +30,10 @@ app.use((req: AuthorizedRequest, res: Response, next: NextFunction) => {
 });
 
 app.use('/users', usersRouter);
-app.use('/cards', cardsRouter)
-
-
-
+app.use('/cards', cardsRouter);
+app.use('*', (req: Request, res: Response) => {
+  res.status(statusCode.notFound).send({ message: messageError.notFound });
+});
 
 app.listen(PORT, () => { 
     console.log(`http://localhost:${PORT}`) 
