@@ -14,14 +14,19 @@ import jwt from 'jsonwebtoken';
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
     const {
- name, about, avatar, email, password 
-} = req.body;
+        name, about, avatar, email, password
+    } = req.body;
 
     return bcrypt.hash(password, 10)
         .then((hash: string) => User.create({
- name, about, avatar, email, password: hash 
-}))
-        .then(user => res.status(statusCode.created).send({ data: user }))
+            name, about, avatar, email, password: hash
+        }))
+        .then(user => {
+            const {password, ...userResponse} = user.toObject();
+            res.status(statusCode.created).send({ data: userResponse }
+            )
+        }
+        )
         .catch((err) => {
             if (err.name === 'ValidationError') {
                 return res.status(statusCode.badRequest).send({

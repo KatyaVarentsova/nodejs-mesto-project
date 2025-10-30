@@ -1,14 +1,12 @@
 import express, 
 { 
   Request,
-  Response, 
-  NextFunction 
+  Response,  
 } from 'express';
 import mongoose from 'mongoose';
 import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
 import { 
-  AuthorizedRequest, 
   messageError, 
   statusCode 
 } from './types';
