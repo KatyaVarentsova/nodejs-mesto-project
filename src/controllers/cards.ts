@@ -1,4 +1,5 @@
 import { 
+    NextFunction,
     Request, 
     Response 
 } from 'express';
@@ -9,14 +10,14 @@ import {
     statusCode 
 } from '../types';
 
-export const getCards = (req: Request, res: Response) => {
+export const getCards = (req: Request, res: Response, next: NextFunction) => {
 
     return Card.find({})
         .then(cards => res.status(statusCode.ok).send({ data: cards }))
-        .catch(() => res.status(statusCode.serverError).send({ message: messageError.serverError }))
+        .catch(next);
 }
 
-export const postCard = (req: AuthorizedRequest, res: Response) => {
+export const postCard = (req: AuthorizedRequest, res: Response, next: NextFunction) => {
     const { name, link } = req.body;
     const owner = req.user?._id;
 
@@ -28,11 +29,11 @@ export const postCard = (req: AuthorizedRequest, res: Response) => {
                     message: messageError.badRequest,
                 });
             }
-            res.status(statusCode.serverError).send({ message: statusCode.serverError })
+            next(err)
         });
 }
 
-export const deleteCardId = (req: AuthorizedRequest, res: Response) => {
+export const deleteCardId = (req: AuthorizedRequest, res: Response, next: NextFunction) => {
     const { cardId } = req.params;
     const userId = req.user?._id;
 
@@ -50,11 +51,11 @@ export const deleteCardId = (req: AuthorizedRequest, res: Response) => {
             if (err.name === 'CastError') {
                 return res.status(statusCode.badRequest).send({ message: messageError.badRequest })
             }
-            res.status(statusCode.serverError).send({ message: statusCode.serverError })
+            next(err)
         })
 }
 
-export const putCardsLikes = (req: AuthorizedRequest, res: Response) => {
+export const putCardsLikes = (req: AuthorizedRequest, res: Response, next: NextFunction) => {
     const { cardId } = req.params;
     const userId = req.user?._id;
 
@@ -73,11 +74,11 @@ export const putCardsLikes = (req: AuthorizedRequest, res: Response) => {
             if (err.name === 'CastError' || err.name === 'ValidationError') {
                 return res.status(statusCode.badRequest).send({ message: messageError.badRequest })
             }
-            res.status(statusCode.serverError).send({ message: statusCode.serverError })
+            next(err)
         })
 }
 
-export const deleteCardsLikes = (req: AuthorizedRequest, res: Response) => {
+export const deleteCardsLikes = (req: AuthorizedRequest, res: Response, next: NextFunction) => {
     const { cardId } = req.params;
     const userId = req.user?._id;
 
@@ -96,6 +97,6 @@ export const deleteCardsLikes = (req: AuthorizedRequest, res: Response) => {
             if (err.name === 'CastError' || err.name === 'ValidationError') {
                 return res.status(statusCode.badRequest).send({ message: messageError.badRequest })
             }
-            res.status(statusCode.serverError).send({ message: statusCode.serverError })
+            next(err)
         })
 }
